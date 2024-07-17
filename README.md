@@ -32,8 +32,8 @@ Copy and paste the following code into the file:
 pragma solidity 0.8.18;
 contract myToken {
 
-    string public tokenName = "AELPH";
-    string public tokenAbbrv = "ALP";
+    string public tokenName = "UPDH";
+    string public tokenAbbrv = "DH";
     uint public totSupply = 0; 
 
     mapping(address => uint) public balances;
