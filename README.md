@@ -1,146 +1,68 @@
-# MyToken Contract
+# MyToken
 
-This Solidity contract implements a simple ERC-20-like token with minting and burning functionalities.
+My project is related to token creation to store details of my custom token and to manage it.
 
-## Features
+## Description
 
-- **Public Variables**: 
-  - `name`: The name of the token.
-  - `symbol`: The abbreviation of the token.
-  - `totalSupply`: The total supply of the token.
+In this project of token creation first i have created a contract which will store the details of my token such as token name, token abbr. and total supply. 
+I had made these variables as public. 
 
-- **Mapping**:
-  - `balances`: A mapping from addresses to their respective token balances.
+Second step is to create a mapping variable to track how many tokens each address holds. The keys of the mapping are Ethereum addresses.
+The values are unsigned integers representing the token balance associated with each address.
 
-- **Functions**:
-  - `mint(address _to, uint256 _amount)`: Mints new tokens, increasing the total supply and the balance of the specified address.
-  - `burn(address _from, uint256 _amount)`: Burns tokens, decreasing the total supply and the balance of the specified address. It ensures that the address has enough tokens to burn.
+Third step is to create a mint function that allows new tokens to be added to the assigned adderess. Parameters are _value and _address. Increases the totalSupply by the _value and
+Increases the balance of the _to address by the _value. For simplicity this function has been made public.
 
-- **Events**:
-  - `Transfer(address indexed from, address indexed to, uint256 value)`: Logs transfer activity, including minting (from the zero address) and burning (to the zero address).
+Forth step is to create another function named burn function. Functionality of this function is to destroy tokens by a specific value from the given address which is opposite to 
+that of mint function. functions Checks if the balance of the _from address is greater than or equal to the _value to be burned. If sufficient balance exists, it decreases the 
+totalSupply by _value and decreases the balance of the _from address by _value. 
+The burn function includes a crucial check to prevent errors:
+Before burning tokens, it verifies that the address initiating the burn (_from) has enough tokens to cover the amount being burned. 
+This prevents accidental over-burning and helps maintain the integrity of the token's supply.
 
 ## Getting Started
 
-These instructions will help you deploy and interact with the contract.
+### Executing program
 
-### Prerequisites
+To run this program, you can use Remix, an online Solidity IDE. To get started, go to the Remix website at https://remix.ethereum.org/.
+Once you are on the Remix website, create a new file by clicking on the "+" icon in the left-hand sidebar. Save the file with a .sol extension (e.g., MyToken.sol). 
+Copy and paste the following code into the file:
 
-- [Node.js](https://nodejs.org/)
-- [npm](https://www.npmjs.com/)
-- [Truffle](https://www.trufflesuite.com/truffle)
-- [Ganache](https://www.trufflesuite.com/ganache) (for local development)
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.18;
+contract myToken {
 
-### Installation
+    string public tokenName = "AELPH";
+    string public tokenAbbrv = "ALP";
+    uint public totSupply = 0; 
 
-1. Install Truffle globally:
-    ```bash
-    npm install -g truffle
-    ```
+    mapping(address => uint) public balances;
 
-2. Initialize a Truffle project:
-    ```bash
-    mkdir MyToken
-    cd MyToken
-    truffle init
-    ```
-
-3. Create the contract file in `contracts/MyToken.sol` and paste the following content:
-
-    ```solidity
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.0;
-
-    contract MyToken {
-        // Public variables to store token details
-        string public name;
-        string public symbol;
-        uint256 public totalSupply;
-
-        // Mapping to store balances of addresses
-        mapping(address => uint256) public balances;
-
-        // Constructor to initialize the token details
-        constructor(string memory _name, string memory _symbol) {
-            name = _name;
-            symbol = _symbol;
-            totalSupply = 0;
-        }
-
-        // Function to mint new tokens
-        function mint(address _to, uint256 _amount) public {
-            require(_to != address(0), "Invalid address");
-
-            totalSupply += _amount;
-            balances[_to] += _amount;
-
-            emit Transfer(address(0), _to, _amount);
-        }
-
-        // Function to burn tokens
-        function burn(address _from, uint256 _amount) public {
-            require(_from != address(0), "Invalid address");
-            require(balances[_from] >= _amount, "Insufficient balance");
-
-            totalSupply -= _amount;
-            balances[_from] -= _amount;
-
-            emit Transfer(_from, address(0), _amount);
-        }
-
-        // Event to log transfer activity
-        event Transfer(address indexed from, address indexed to, uint256 value);
+    function mint(uint _value, address _address) public {
+        totSupply += _value;
+        balances[_address] += _value;
     }
-    ```
 
-4. Compile the contract:
-    ```bash
-    truffle compile
-    ```
+    function burn(uint _value, address _address) public {
+        if (balances[_address] >= _value){
+            totSupply -= _value;
+            balances[_address] -= _value;
+        }
+    }
+}
 
-5. Deploy the contract:
-    - Create a migration file in `migrations/2_deploy_contracts.js`:
+## Help
 
-        ```javascript
-        const MyToken = artifacts.require("MyToken");
+To compile the code, click on the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to "0.8.18" 
+(or another compatible version), and then click on the "Compile MyToken.sol" button.
 
-        module.exports = function(deployer) {
-            deployer.deploy(MyToken, "MyTokenName", "MTK");
-        };
-        ```
+Once the code is compiled, you can deploy the contract by clicking on the "Deploy & Run Transactions" tab in the left-hand sidebar. 
+Select the "Mytoken" contract from the dropdown menu, and then click on the "Deploy" button.
 
-    - Run the migration:
-        ```bash
-        truffle migrate
-        ```
+Once the contract is deployed, you can interact with it by calling the mint, burn function or check balance. Click on the "MyToken" 
+contract in the left-hand sidebar, and then click on the "mint" or "burn" function. Finally, click on the "transact" button to execute the 
+function and retrieve the token you burned or minted.
 
-### Interacting with the Contract
+## Authors
 
-1. Start the Truffle console:
-    ```bash
-    truffle console
-    ```
-
-2. Get the deployed contract instance:
-    ```javascript
-    let instance = await MyToken.deployed();
-    ```
-
-3. Mint tokens:
-    ```javascript
-    await instance.mint("0xYourAddress", 1000);
-    ```
-
-4. Burn tokens:
-    ```javascript
-    await instance.burn("0xYourAddress", 500);
-    ```
-
-5. Check the balance of an address:
-    ```javascript
-    let balance = await instance.balances("0xYourAddress");
-    console.log(balance.toString());
-    ```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Ronit 
